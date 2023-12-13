@@ -6,7 +6,7 @@ import 'package:iconsax/iconsax.dart';
  * Created by Imdvlpr_
  */
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField<T> extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final TextInputType? keyboardType;
@@ -19,9 +19,10 @@ class CustomTextField extends StatelessWidget {
   final int? minLines;
   final int? maxLines;
   final VoidCallback? onMenuActionTap;
-  final List<String>? dropdownItems;
-  final String? selectedDropdownItem;
-  final Function(String)? onDropdownChanged;
+  final List<T>? dropdownItems;
+  final T? selectedDropdownItem;
+  final void Function(T?)? onDropdownChanged;
+  final String Function(T)? displayText;
 
   const CustomTextField({
     Key? key,
@@ -40,6 +41,7 @@ class CustomTextField extends StatelessWidget {
     this.dropdownItems,
     this.selectedDropdownItem,
     this.onDropdownChanged,
+    this.displayText,
   }) : super(key: key);
 
   @override
@@ -78,24 +80,21 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: dropdownItems != null
             ? Padding(
           padding: const EdgeInsets.only(right: 10.0),
-          child: DropdownButton<String>(
+          child: DropdownButton<T>(
             value: selectedDropdownItem,
             icon: const Icon(Iconsax.arrow_down_1),
             iconSize: 24,
             elevation: 16,
-            onChanged: (String? newValue) {
-              onDropdownChanged?.call(newValue!);
-            },
-            items: dropdownItems!.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
+            onChanged: onDropdownChanged,
+            items: dropdownItems!.map<DropdownMenuItem<T>>((T value) {
+              return DropdownMenuItem<T>(
                 value: value,
                 child: Container(
                   width: 200,
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Text(value),
+                    color: Colors.transparent),
+                    child: Text(displayText?.call(value) ?? ''),
                 ),
               );
             }).toList(),

@@ -1,11 +1,12 @@
-import 'dart:convert';
 
+import 'package:daily_buddy/network/api_service.dart';
 import 'package:daily_buddy/widget/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import '../model/category_model.dart';
 import '../widget/custom_app_bar.dart';
 
 /**
@@ -20,14 +21,26 @@ class AddList extends StatefulWidget {
 }
 
 class _AddListState extends State<AddList> {
+
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
   final _dateController = TextEditingController();
   final _timeController = TextEditingController();
   final _categoryController = TextEditingController();
+  late Future<List<CategoryModel>> categoryList;
+  late String categoryId = '';
 
-  final List<String> _dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
-  String? _selectedDropdownItem;
+  @override
+  void initState() {
+    super.initState();
+    categoryList = getCategoryList();
+  }
+
+  Future<List<CategoryModel>> getCategoryList() async {
+    return ApiService.getCategoryList(onDataChanged: () {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,103 +52,122 @@ class _AddListState extends State<AddList> {
           Navigator.pop(context);
         },
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: ListView(
-              children: <Widget> [
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: CustomTextField(
-                    controller: _titleController,
-                    labelText: 'Title',
-                    hintText: 'Set activity title',
-                    keyboardType: TextInputType.text,
-                    prefixIcon: const Icon(Iconsax.task_square),
-                    maxLines: 1,
+      body: FutureBuilder<List<CategoryModel>>(
+        future: categoryList,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text('Error loading categories'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text('No categories available'));
+          } else {
+            List<CategoryModel> categoryList = snapshot.data as List<CategoryModel>;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: <Widget> [
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: CustomTextField(
+                          controller: _titleController,
+                          labelText: 'Title',
+                          hintText: 'Set activity title',
+                          keyboardType: TextInputType.text,
+                          prefixIcon: const Icon(Iconsax.task_square),
+                          maxLines: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: CustomTextField(
+                          controller: _dateController,
+                          labelText: 'Date',
+                          hintText: 'Set the activity date',
+                          isReadOnly: true,
+                          prefixIcon: const Icon(Iconsax.calendar_1),
+                          onMenuActionTap: () {
+                            _showDatePicker();
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: CustomTextField(
+                          controller: _timeController,
+                          labelText: 'Time',
+                          hintText: 'Set the activity time',
+                          isReadOnly: true,
+                          prefixIcon: const Icon(Iconsax.clock),
+                          onMenuActionTap: () {
+                            _selectTime(context);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: CustomTextField<CategoryModel>(
+                          controller: _categoryController,
+                          labelText: 'Category',
+                          hintText: 'Set the activity category',
+                          isReadOnly: true,
+                          prefixIcon: const Icon(Iconsax.task_square),
+                          dropdownItems: categoryList,
+                          onDropdownChanged: (CategoryModel? newValue) {
+                            setState(() {
+                              _categoryController.text = (newValue?.categoryName ?? '');
+                              categoryId = (newValue?.categoryId ?? '');
+                            });
+                          },
+                          displayText: (CategoryModel category) => category.categoryName,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: CustomTextField(
+                          controller: _descController,
+                          labelText: 'Description',
+                          hintText: 'Set activity description',
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 8,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: CustomTextField(
-                    controller: _dateController,
-                    labelText: 'Date',
-                    hintText: 'Set the activity date',
-                    isReadOnly: true,
-                    prefixIcon: const Icon(Iconsax.calendar_1),
-                    onMenuActionTap: () {
-                      _showDatePicker();
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: CustomTextField(
-                    controller: _timeController,
-                    labelText: 'Time',
-                    hintText: 'Set the activity time',
-                    isReadOnly: true,
-                    prefixIcon: const Icon(Iconsax.clock),
-                    onMenuActionTap: () {
-                      _selectTime(context);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: CustomTextField(
-                    controller: _categoryController,
-                    labelText: 'Category',
-                    hintText: 'Set the activity category',
-                    isReadOnly: true,
-                    prefixIcon: const Icon(Iconsax.task_square),
-                    dropdownItems: _dropdownItems,
-                    selectedDropdownItem: _selectedDropdownItem,
-                    onDropdownChanged: (String newValue) {
-                      _categoryController.text = newValue;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: CustomTextField(
-                    controller: _descController,
-                    labelText: 'Description',
-                    hintText: 'Set activity description',
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 8,
-                  ),
+                  padding: const EdgeInsets.all(20.0),
+                  child: FilledButton(
+                      onPressed: submitData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)
+                        ),
+                        fixedSize: const Size(200, 50),
+                        textStyle: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      child: const Text('Save')),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: FilledButton(
-                onPressed: submitData,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)
-                  ),
-                  fixedSize: const Size(200, 50),
-                  textStyle: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                child: const Text('Save')),
-          ),
-        ],
+            );
+          }},
       ),
     );
   }
@@ -185,8 +217,16 @@ class _AddListState extends State<AddList> {
     final time = _timeController.text;
 
     DateTime inputDate = DateFormat('EEEE, dd MMMM yyyy').parse(date);
-    String outputDateString = DateFormat('yyyy-MM-dd').format(inputDate);
-    //http.post(url)
+    String outputDate = DateFormat('yyyy-MM-dd').format(inputDate);
+    DateTime inputTime = DateFormat('HH:mm').parse(time);
+    String outputTime = DateFormat('HH:mm:ss').format(inputTime);
+
+    ApiService.createActivity(title, desc, outputDate, outputTime, categoryId, context, onActivityCreated: () {
+      _titleController.text = '';
+      _dateController.text = '';
+      _timeController.text = '';
+      _descController.text = '';
+    });
   }
 
 }

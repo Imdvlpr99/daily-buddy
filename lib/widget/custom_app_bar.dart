@@ -32,7 +32,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 25,
-              vertical: 50 / 2.5,
+              vertical: 25 / 2.5,
             ),
             child: Stack(
               children: [
@@ -56,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           onTap: onBackButtonTap,
                           child: const Padding(
                             padding: EdgeInsets.all(10.0),
-                            child: Icon(Iconsax.arrow_left2, color: Colors.white,),
+                            child: Icon(Iconsax.arrow_left4, color: Colors.white,),
                           )
                         )
                       ),
@@ -84,7 +84,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size(
     double.maxFinite,
-    80,
+    70,
   );
 }
 

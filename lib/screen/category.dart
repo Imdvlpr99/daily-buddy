@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../model/category_model.dart';
 import '../widget/custom_app_bar.dart';
 import '../widget/custom_text_field.dart';
 
@@ -52,33 +53,36 @@ class _CategoryState extends State<Category> {
             } else if (snapshot.data == null || snapshot.data!.isEmpty) {
               return const EmptyScreen();
             } else {
-              List category = snapshot.data!;
+              List<CategoryModel> categoryList = snapshot.data as List<CategoryModel>;
               return RefreshIndicator(
                 onRefresh: refreshCategoryList,
                 child: ListView.builder(
-                  itemCount: category.length,
+                  itemCount: categoryList.length,
                   itemBuilder: (context, index) {
-                    final item = category[index];
+                    final item = categoryList[index];
                     return Container(
                       margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
                       height: 100,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey), // Set your desired border color
-                        borderRadius: BorderRadius.circular(15), // Set your desired border radius
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       child: Center(
                         child: ListTile(
                           leading: const CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.blue,
-                              child: Icon(Iconsax.stickynote,
-                                color: Colors.white,)),
-                          title: Text(item['category_name']),
+                            radius: 25,
+                            backgroundColor: Colors.blue,
+                            child: Icon(
+                              Iconsax.stickynote,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(item.categoryName),
                         ),
                       ),
                     );
                   },
-                )
+                ),
               );
             }
           },
