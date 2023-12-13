@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import '../model/category_model.dart';
 import '../widget/custom_app_bar.dart';
 
