@@ -27,7 +27,7 @@ class _CategoryState extends State<Category> {
     refreshCategoryList();
   }
 
-  void refreshCategoryList() {
+  Future<void> refreshCategoryList() async {
     categoryList = ApiService.getCategoryList(onDataChanged: () {
       setState(() {});
     });
@@ -39,7 +39,6 @@ class _CategoryState extends State<Category> {
     return Scaffold(
         appBar: const CustomAppBar(
           title: "Category",
-          leading: Icon(null),
         ),
         body: FutureBuilder<List>(
           future: categoryList,
@@ -54,29 +53,32 @@ class _CategoryState extends State<Category> {
               return const EmptyScreen();
             } else {
               List category = snapshot.data!;
-              return ListView.builder(
-                itemCount: category.length,
-                itemBuilder: (context, index) {
-                  final item = category[index];
-                  return Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey), // Set your desired border color
-                      borderRadius: BorderRadius.circular(15), // Set your desired border radius
-                    ),
-                    child: Center(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.blue,
-                            child: Icon(Iconsax.stickynote,
-                              color: Colors.white,)),
-                        title: Text(item['category_name']),
+              return RefreshIndicator(
+                onRefresh: refreshCategoryList,
+                child: ListView.builder(
+                  itemCount: category.length,
+                  itemBuilder: (context, index) {
+                    final item = category[index];
+                    return Container(
+                      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey), // Set your desired border color
+                        borderRadius: BorderRadius.circular(15), // Set your desired border radius
                       ),
-                    ),
-                  );
-                },
+                      child: Center(
+                        child: ListTile(
+                          leading: const CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.blue,
+                              child: Icon(Iconsax.stickynote,
+                                color: Colors.white,)),
+                          title: Text(item['category_name']),
+                        ),
+                      ),
+                    );
+                  },
+                )
               );
             }
           },
@@ -148,7 +150,9 @@ class _CategoryState extends State<Category> {
                           onPressed: _categoryNameController.text.isEmpty
                               ? null
                               : () {
-                            ApiService.createCategory(_categoryNameController.text, context);
+                            ApiService.createCategory(_categoryNameController.text, context, onCategoryCreated: () {
+                              refreshCategoryList();
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -177,7 +181,6 @@ class _CategoryState extends State<Category> {
       },
     ).whenComplete(() {
       _categoryNameController.clear();
-      refreshCategoryList();
     });
   }
 }

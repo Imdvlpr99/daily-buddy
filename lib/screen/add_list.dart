@@ -32,8 +32,12 @@ class _AddListState extends State<AddList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Add Activity"
+      appBar: CustomAppBar(
+        title: "Add Activity",
+        showBackButton: true,
+        onBackButtonTap: () {
+          Navigator.pop(context);
+        },
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

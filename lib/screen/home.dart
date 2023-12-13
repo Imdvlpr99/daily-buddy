@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: const CustomAppBar(
         title: "Home",
-        leading: Icon(null),
+        showBackButton: false,
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: navigateToAddList,
