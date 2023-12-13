@@ -221,7 +221,7 @@ class _AddListState extends State<AddList> {
     DateTime inputTime = DateFormat('HH:mm').parse(time);
     String outputTime = DateFormat('HH:mm:ss').format(inputTime);
 
-    ApiService.createActivity(title, desc, outputDate, outputTime, categoryId, context, onActivityCreated: () {
+    ApiService.createActivity(title, desc, outputDate, outputTime, categoryId, onActivityCreated: () {
       _titleController.text = '';
       _dateController.text = '';
       _timeController.text = '';

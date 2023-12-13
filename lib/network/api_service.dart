@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +12,7 @@ class ApiService {
     printer: PrettyPrinter(),
   );
 
-  static Future<void> createCategory(String categoryName, BuildContext context, {Function()? onCategoryCreated}) async {
+  static Future<void> createCategory(String categoryName, {Function()? onCategoryCreated}) async {
     final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/create-category');
     final Map<String, dynamic> body = {
       'category_name': categoryName,
@@ -33,7 +32,6 @@ class ApiService {
           message: message,
           gravity: ToastGravity.BOTTOM,
           length: Toast.LENGTH_LONG,
-          backgroundColor: Colors.blue,
           textColor: Colors.white,
         );
 
@@ -41,7 +39,6 @@ class ApiService {
           onCategoryCreated();
         }
 
-        Navigator.pop(context);
       } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
         String message = responseData['message'];
@@ -49,7 +46,6 @@ class ApiService {
           message: message,
           gravity: ToastGravity.BOTTOM,
           length: Toast.LENGTH_LONG,
-          backgroundColor: Colors.blue,
           textColor: Colors.white,
         );
       }
@@ -82,7 +78,6 @@ class ApiService {
       String date,
       String time,
       String categoryId,
-      BuildContext context,
       {Function()? onActivityCreated}) async {
     final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/create-activity');
     final Map<String, dynamic> body = {
@@ -108,7 +103,6 @@ class ApiService {
           message: message,
           gravity: ToastGravity.BOTTOM,
           length: Toast.LENGTH_LONG,
-          backgroundColor: Colors.blue,
           textColor: Colors.white,
         );
 
@@ -116,7 +110,6 @@ class ApiService {
           onActivityCreated();
         }
 
-        Navigator.pop(context);
       } else {
         final Map<String, dynamic> responseData = json.decode(response.body);
         String message = responseData['message'];
@@ -124,7 +117,93 @@ class ApiService {
           message: message,
           gravity: ToastGravity.BOTTOM,
           length: Toast.LENGTH_LONG,
-          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      logger.e('Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> deleteCategory(String categoryId, {Function()? onDeleteCategorySuccess}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/delete-category');
+    final Map<String, dynamic> body = {
+      'id': categoryId,
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+
+        if (onDeleteCategorySuccess != null) {
+          onDeleteCategorySuccess();
+        }
+
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      logger.e('Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> editCategory(String categoryId, String categoryName, {Function()? onSuccessEditCategory}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/edit-category');
+    final Map<String, dynamic> body = {
+      'category_id': categoryId,
+      'category_name': categoryName
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+
+        if (onSuccessEditCategory != null) {
+          onSuccessEditCategory();
+        }
+
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
           textColor: Colors.white,
         );
       }
