@@ -1,16 +1,17 @@
 import 'dart:convert';
+import 'package:daily_buddy/model/activity_model.dart';
+import 'package:daily_buddy/widget/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
-
 import '../model/category_model.dart';
 import '../widget/custom_toast.dart';
 
+/**
+ * Created by Imdvlpr_
+ */
+
 class ApiService {
-  static Logger logger = Logger(
-    printer: PrettyPrinter(),
-  );
 
   static Future<void> createCategory(String categoryName, {Function()? onCategoryCreated}) async {
     final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/create-category');
@@ -50,7 +51,7 @@ class ApiService {
         );
       }
     } catch (e) {
-      logger.e('Exception: $e');
+      Utils.getLogger().e('Exception: $e');
       rethrow;
     }
   }
@@ -68,7 +69,8 @@ class ApiService {
       onDataChanged?.call();
       return categoryModels;
     } else {
-      throw Exception('Failed to load category list');
+      List<CategoryModel> categoryModels = [];
+      return categoryModels;
     }
   }
 
@@ -121,7 +123,7 @@ class ApiService {
         );
       }
     } catch (e) {
-      logger.e('Exception: $e');
+      Utils.getLogger().e('Exception: $e');
       rethrow;
     }
   }
@@ -164,7 +166,7 @@ class ApiService {
         );
       }
     } catch (e) {
-      logger.e('Exception: $e');
+      Utils.getLogger().e('Exception: $e');
       rethrow;
     }
   }
@@ -208,7 +210,36 @@ class ApiService {
         );
       }
     } catch (e) {
-      logger.e('Exception: $e');
+      Utils.getLogger().e('Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<List<ActivityModel>> getActivityListByDate(String date, {Function()? onSuccessGetList}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/get-activity-by-date');
+    final Map<String, dynamic> body = {
+      'date': date,
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final List<dynamic> data = json['data'] as List<dynamic>;
+        List<ActivityModel> activityModel = data.map((item) => ActivityModel.fromJson(item)).toList();
+        onSuccessGetList?.call();
+        return activityModel;
+      } else {
+        List<ActivityModel> activityModel = [];
+        return activityModel;
+      }
+    } catch (e) {
+      Utils.getLogger().e('Exception: $e');
       rethrow;
     }
   }

@@ -48,74 +48,80 @@ class CustomTextField<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
-    return TextFormField(
-      onTap: onMenuActionTap,
-      readOnly: isReadOnly ?? false,
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: isObscureText!,
-      obscuringCharacter: obscureCharacter!,
-      minLines: minLines,
-      maxLines: maxLines,
-      style: GoogleFonts.poppins().copyWith(
-        color: Colors.black,
-        fontSize: 14,
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width
       ),
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        isDense: true,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        constraints: BoxConstraints(
-          maxWidth: width,
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        labelText: labelText,
-        hintText: hintText,
-        hintStyle: GoogleFonts.poppins().copyWith(
-          color: Colors.grey,
+      child: TextFormField(
+        onTap: onMenuActionTap,
+        readOnly: isReadOnly ?? false,
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: isObscureText!,
+        obscuringCharacter: obscureCharacter!,
+        minLines: minLines,
+        maxLines: maxLines,
+        style: GoogleFonts.poppins().copyWith(
+          color: Colors.black,
           fontSize: 14,
         ),
-        prefixIcon: prefixIcon,
-        suffixIcon: dropdownItems != null
-            ? Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: DropdownButton<T>(
-            value: selectedDropdownItem,
-            icon: const Icon(Iconsax.arrow_down_1),
-            iconSize: 24,
-            elevation: 16,
-            onChanged: onDropdownChanged,
-            items: dropdownItems!.map<DropdownMenuItem<T>>((T value) {
-              return DropdownMenuItem<T>(
-                value: value,
-                child: Container(
-                  width: 200,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent),
-                    child: Text(displayText?.call(value) ?? ''),
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          isDense: true,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          constraints: BoxConstraints(
+            maxWidth: width,
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          labelText: labelText,
+          hintText: hintText,
+          hintStyle: GoogleFonts.poppins().copyWith(
+            color: Colors.grey,
+            fontSize: 14,
+          ),
+          prefixIcon: prefixIcon,
+          suffixIcon: dropdownItems != null ? Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: Expanded(
+                child: DropdownButton<T>(
+                  value: selectedDropdownItem,
+                  icon: const Icon(Iconsax.arrow_down_1),
+                  iconSize: 24,
+                  elevation: 16,
+                  onChanged: onDropdownChanged,
+                  items: dropdownItems!.map<DropdownMenuItem<T>>((T value) {
+                    return DropdownMenuItem<T>(
+                      value: value,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                        child: Text(displayText?.call(value) ?? ''),
+                      ),
+                    );
+                  }).toList(),
+                  underline: Container(),
+                  dropdownColor: Colors.white,
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-              );
-            }).toList(),
-            underline: Container(),
-            dropdownColor: Colors.white,
+            ),
+          )
+              : null,
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15.0),
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 1.0,
+            ),
           ),
-        )
-            : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          borderSide: const BorderSide(
-            color: Colors.grey,
-            width: 1.0,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          borderSide: const BorderSide(
-            color: Colors.grey,
-            width: 1.0,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 1.0,
+            ),
           ),
         ),
       ),

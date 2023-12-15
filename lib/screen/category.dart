@@ -1,10 +1,10 @@
-import 'package:daily_buddy/network/api_service.dart';
 import 'package:daily_buddy/widget/empty_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../api/api_service.dart';
 import '../model/category_model.dart';
 import '../widget/custom_app_bar.dart';
 import '../widget/custom_text_field.dart';
@@ -56,11 +56,16 @@ class _CategoryState extends State<Category> {
               List<CategoryModel> categoryList = snapshot.data as List<CategoryModel>;
               return RefreshIndicator(
                 onRefresh: refreshCategoryList,
-                child: ListView.builder(
-                  itemCount: categoryList.length,
-                  itemBuilder: (context, index) {
-                    final item = categoryList[index];
-                    return Slidable(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ListView.separated(
+                    itemCount: categoryList.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10); // Adjust the height as needed.
+                    },
+                    itemBuilder: (context, index) {
+                      final item = categoryList[index];
+                      return Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           children: [
@@ -83,37 +88,45 @@ class _CategoryState extends State<Category> {
                               foregroundColor: Colors.white,
                               icon: Iconsax.edit,
                               label: 'Edit',
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(15.0),
+                                bottomRight: Radius.circular(15.0),
+                              ),
                             )
                           ],
                         ),
-                      child: Card(
-                        elevation: 8.0,
-                        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white70,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                              title: Text(item.categoryName),
-                              leading: const CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.blue,
-                                child: Icon(
-                                  Iconsax.stickynote,
-                                  color: Colors.white,
+                        child: InkWell(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white70,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                            child: Row(
+                              children: [
+                                const CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.blue,
+                                  child: Icon(
+                                    Iconsax.stickynote,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              )
-                          ) ,
+                                const SizedBox(width: 10),
+                                Text(item.categoryName),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  )
+                )
               );
             }
           },
