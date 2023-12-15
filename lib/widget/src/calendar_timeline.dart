@@ -1,6 +1,7 @@
 import 'package:daily_buddy/widget/calendar_timeline.dart';
 import 'package:daily_buddy/widget/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -358,34 +359,43 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
                   shrink: widget.shrink,
                   activeColor: widget.activeBackgroundDayColor,
                 ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          Padding(
-            padding: EdgeInsets.only(right: widget.leftMargin),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 215,
-                  child: CustomTextField<int>(
-                    controller: _monthController,
-                    labelText: "",
-                    hintText: "Select Month",
-                    isReadOnly: true,
-                    onDropdownChanged: (int? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          _monthSelectedIndex = newValue;
-                          _onSelectMonth(newValue);
-                          _monthController.text = DateFormat.MMMM(_locale).format(_months[newValue]);
-                        });
-                      }
-                    },
-                    dropdownItems: List.generate(_months.length, (index) => index),
-                    displayText: (int value) => DateFormat.MMMM(_locale).format(_months[value]),
-                  ),
-                )
+                const SizedBox(width: 5),
+                PopupMenuButton<int>(
+                  icon: const Icon(Iconsax.arrow_down5, color: Colors.white),
+                  itemBuilder: (context) => [
+                    PopupMenuItem<int>(
+                      value: 1,
+                      child: Container(
+                        width: 120,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Column(
+                          children: List.generate(
+                            _months.length,
+                                (index) => PopupMenuItem<int>(
+                              value: index,
+                              child: SizedBox(
+                                width: 120,
+                                child: Center(
+                                  child: Text(
+                                    DateFormat.MMMM(_locale).format(_months[index]),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  onSelected: (int value) {
+                    setState(() {
+                      _monthSelectedIndex = value;
+                      _onSelectMonth(value);
+                    });
+                  },
+                ),
               ],
             ),
           ),
@@ -429,13 +439,6 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
                   dayNameColor: widget.dayNameColor,
                   shrink: widget.shrink,
                 ),
-                if (index == _days.length - 1)
-                // Last element to take space to do scroll to left side
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width -
-                        widget.leftMargin -
-                        65,
-                  )
               ],
             ),
           );
