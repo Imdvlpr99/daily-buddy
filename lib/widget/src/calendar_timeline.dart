@@ -6,9 +6,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../custom_text_field.dart';
-
-
 typedef OnDateSelected = void Function(DateTime);
 
 class CalendarTimeline extends StatefulWidget {
@@ -74,19 +71,17 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
   final ItemScrollController _controllerYear = ItemScrollController();
   final ItemScrollController _controllerMonth = ItemScrollController();
   final ItemScrollController _controllerDay = ItemScrollController();
+  final List<DateTime> _years = [];
+  final List<DateTime> _months = [];
+  final List<DateTime> _days = [];
 
   int? _yearSelectedIndex;
   int? _monthSelectedIndex;
   int? _daySelectedIndex;
-  late double _scrollAlignment;
 
-  final List<DateTime> _years = [];
-  final List<DateTime> _months = [];
-  final List<DateTime> _days = [];
   late DateTime _selectedDate;
-  final _monthController = TextEditingController();
-
   late String _locale;
+  late double _scrollAlignment;
 
   @override
   void didChangeDependencies() {
@@ -407,7 +402,7 @@ class _CalendarTimelineState extends State<CalendarTimeline> {
   Widget _buildDayList() {
     return SizedBox(
       key: const Key('ScrollableDayList'),
-      height: 120,
+      height: 100,
       child: ScrollablePositionedList.builder(
         itemScrollController: _controllerDay,
         initialScrollIndex: _daySelectedIndex ?? 0,

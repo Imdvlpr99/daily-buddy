@@ -58,8 +58,8 @@ class DayItem extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           SizedBox(
-            height: shrink ? 40 : 70,
-            width: shrink ? 33 : 60,
+            height: 60,
+            width: 60,
             child: Container(
               decoration: isSelected ? BoxDecoration(
                 color: activeDayBackgroundColor ?? Theme.of(context).colorScheme.secondary,

@@ -53,9 +53,13 @@ class _CustomExpandableItemState extends State<CustomExpandableItem> {
                 isExpanded = !isExpanded;
               });
             },
-            child: Card(
-              elevation: 0,
-              color: cardColor,
+            child: Container(
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: const BorderRadius.all(
+                    Radius.circular(15.0)
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

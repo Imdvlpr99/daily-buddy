@@ -215,6 +215,99 @@ class ApiService {
     }
   }
 
+  static Future<void> editActivity(ActivityModel activityModel, {Function()? onSuccessEditActivity}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/edit-activity');
+    final Map<String, dynamic> body = {
+      'id': activityModel.id,
+      'title': activityModel.title,
+      'desc': activityModel.desc,
+      'date': activityModel.date,
+      'time': activityModel.time,
+      'is_complete': activityModel.isComplete,
+      'category_id': activityModel.categoryId,
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+
+        if (onSuccessEditActivity != null) {
+          onSuccessEditActivity();
+        }
+
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      Utils.getLogger().e('Exception: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> updateActivity(ActivityModel activityModel, {Function()? onSuccessUpdateActivity}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/update-activity-status');
+    final Map<String, dynamic> body = {
+      'id': activityModel.id,
+      'is_complete': activityModel.isComplete,
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+
+        if (onSuccessUpdateActivity != null) {
+          onSuccessUpdateActivity();
+        }
+
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      Utils.getLogger().e('Exception: $e');
+      rethrow;
+    }
+  }
+
   static Future<List<ActivityModel>> getActivityListByDate(String date, {Function()? onSuccessGetList}) async {
     final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/get-activity-by-date');
     final Map<String, dynamic> body = {

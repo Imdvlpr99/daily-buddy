@@ -1,11 +1,11 @@
 class ActivityModel {
-  final String id;
-  final String title;
-  final String desc;
-  final String date;
-  final String time;
-  final String categoryId;
-  final String isComplete;
+  late final String id;
+  late final String title;
+  late final String desc;
+  late final String date;
+  late final String time;
+  late final String categoryId;
+  late final String isComplete;
 
   ActivityModel(
       this.id,
