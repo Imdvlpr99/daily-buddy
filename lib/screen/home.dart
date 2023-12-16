@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconsax/iconsax.dart';
 import '../api/api_service.dart';
-import '../widget/custom_page_route.dart';
 import '../widget/src/calendar_timeline.dart';
 
 class Home extends StatefulWidget {
@@ -163,7 +162,11 @@ class _HomeState extends State<Home> {
                                                       motion: const ScrollMotion(),
                                                       children: [
                                                         SlidableAction(
-                                                          onPressed: (BuildContext context) {},
+                                                          onPressed: (BuildContext context) {
+                                                            ApiService.deleteActivity(item.id, onSuccessDelete: () {
+                                                              getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
+                                                            });
+                                                          },
                                                           backgroundColor: Colors.red,
                                                           foregroundColor: Colors.white,
                                                           icon: Iconsax.trash,
@@ -186,6 +189,7 @@ class _HomeState extends State<Home> {
                                                               activityModel: activityModel,
                                                               onComplete: () {
                                                                 setState(() {
+                                                                  getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
                                                                 });
                                                               },
                                                             );
@@ -214,6 +218,7 @@ class _HomeState extends State<Home> {
                                                           backgroundColor: Colors.green,
                                                           foregroundColor: Colors.white,
                                                           icon: Iconsax.tick_circle,
+                                                          label: 'Complete',
                                                           borderRadius: const BorderRadius.only(
                                                             topLeft: Radius.circular(15.0),
                                                             bottomLeft: Radius.circular(15.0),
@@ -263,23 +268,20 @@ class _HomeState extends State<Home> {
                                                   motion: const ScrollMotion(),
                                                   children: [
                                                     SlidableAction(
-                                                      onPressed: (BuildContext context) {},
+                                                      onPressed: (BuildContext context) {
+                                                        ApiService.deleteActivity(item.id, onSuccessDelete: () {
+                                                          getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
+                                                        });
+                                                      },
                                                       backgroundColor: Colors.red,
                                                       foregroundColor: Colors.white,
                                                       icon: Iconsax.trash,
                                                       label: 'Delete',
-                                                    ),
-                                                    SlidableAction(
-                                                      onPressed: (BuildContext context) {},
-                                                      backgroundColor: Colors.blue,
-                                                      foregroundColor: Colors.white,
-                                                      icon: Iconsax.edit,
-                                                      label: 'Edit',
                                                       borderRadius: const BorderRadius.only(
                                                         topRight: Radius.circular(15.0),
                                                         bottomRight: Radius.circular(15.0),
                                                       ),
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                                 child: CustomExpandableItem(

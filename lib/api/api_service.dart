@@ -171,6 +171,49 @@ class ApiService {
     }
   }
 
+  static Future<void> deleteActivity(String id, {Function()? onSuccessDelete}) async {
+    final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/delete-activity');
+    final Map<String, dynamic> body = {
+      'id': id,
+    };
+    final encodedBody = body.keys.map((key) => '$key=${Uri.encodeQueryComponent(body[key]!.toString())}').join('&');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: encodedBody,
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+
+        if (onSuccessDelete != null) {
+          onSuccessDelete();
+        }
+
+      } else {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        String message = responseData['message'];
+        CustomToast.show(
+          message: message,
+          gravity: ToastGravity.BOTTOM,
+          length: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      Utils.getLogger().e('Exception: $e');
+      rethrow;
+    }
+  }
+
   static Future<void> editCategory(String categoryId, String categoryName, {Function()? onSuccessEditCategory}) async {
     final Uri uri = Uri.parse('https://imdvlpr.my.id/dailybuddy/api/edit-category');
     final Map<String, dynamic> body = {
