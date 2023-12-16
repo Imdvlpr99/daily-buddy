@@ -1,9 +1,11 @@
-import 'package:daily_buddy/network/api_service.dart';
 import 'package:daily_buddy/widget/empty_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../api/api_service.dart';
+import '../model/category_model.dart';
 import '../widget/custom_app_bar.dart';
 import '../widget/custom_text_field.dart';
 
@@ -27,7 +29,7 @@ class _CategoryState extends State<Category> {
     refreshCategoryList();
   }
 
-  void refreshCategoryList() {
+  Future<void> refreshCategoryList() async {
     categoryList = ApiService.getCategoryList(onDataChanged: () {
       setState(() {});
     });
@@ -35,11 +37,9 @@ class _CategoryState extends State<Category> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: const CustomAppBar(
           title: "Category",
-          leading: Icon(null),
         ),
         body: FutureBuilder<List>(
           future: categoryList,
@@ -53,43 +53,103 @@ class _CategoryState extends State<Category> {
             } else if (snapshot.data == null || snapshot.data!.isEmpty) {
               return const EmptyScreen();
             } else {
-              List category = snapshot.data!;
-              return ListView.builder(
-                itemCount: category.length,
-                itemBuilder: (context, index) {
-                  final item = category[index];
-                  return Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey), // Set your desired border color
-                      borderRadius: BorderRadius.circular(15), // Set your desired border radius
-                    ),
-                    child: Center(
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.blue,
-                            child: Icon(Iconsax.stickynote,
-                              color: Colors.white,)),
-                        title: Text(item['category_name']),
-                      ),
-                    ),
-                  );
-                },
+              List<CategoryModel> categoryList = snapshot.data as List<CategoryModel>;
+              return RefreshIndicator(
+                onRefresh: refreshCategoryList,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ListView.separated(
+                    itemCount: categoryList.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10); // Adjust the height as needed.
+                    },
+                    itemBuilder: (context, index) {
+                      final item = categoryList[index];
+                      return Slidable(
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (BuildContext context) {
+                                ApiService.deleteCategory(item.categoryId, onDeleteCategorySuccess: () {
+                                  refreshCategoryList();
+                                });
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Iconsax.trash,
+                              label: 'Delete',
+                            ),
+                            SlidableAction(
+                              onPressed: (BuildContext context) {
+                                _addCategoryBottomSheet(item.categoryId, item.categoryName);
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Iconsax.edit,
+                              label: 'Edit',
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(15.0),
+                                bottomRight: Radius.circular(15.0),
+                              ),
+                            )
+                          ],
+                        ),
+                        child: InkWell(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white70,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 1,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                            child: Row(
+                              children: [
+                                const CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.blue,
+                                  child: Icon(
+                                    Iconsax.stickynote,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(item.categoryName),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                )
               );
             }
           },
         ),
         floatingActionButton: FloatingActionButton(
-            onPressed: _addCategoryBottomSheet,
+            onPressed: () {
+              _addCategoryBottomSheet('', '');
+            },
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
             child: const Icon(Icons.add,))
     );
   }
 
-  void _addCategoryBottomSheet() {
+  void _addCategoryBottomSheet(String categoryId, String categoryName) {
+    String buttonText = '';
+    if(categoryName != '') {
+      _categoryNameController.text = categoryName;
+      buttonText = 'Update';
+    } else {
+      _categoryNameController.text = '';
+      buttonText = 'Save';
+    }
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -148,7 +208,17 @@ class _CategoryState extends State<Category> {
                           onPressed: _categoryNameController.text.isEmpty
                               ? null
                               : () {
-                            ApiService.createCategory(_categoryNameController.text, context);
+                            if (categoryName != '') {
+                              ApiService.editCategory(categoryId, _categoryNameController.text, onSuccessEditCategory: () {
+                                refreshCategoryList();
+                                Navigator.pop(context);
+                              });
+                            } else {
+                              ApiService.createCategory(_categoryNameController.text, onCategoryCreated: () {
+                                refreshCategoryList();
+                                Navigator.pop(context);
+                              });
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -164,7 +234,7 @@ class _CategoryState extends State<Category> {
                               ),
                             ),
                           ),
-                          child: const Text('Save'),
+                          child: Text(buttonText),
                         ),
                       ),
                     ],
@@ -177,7 +247,6 @@ class _CategoryState extends State<Category> {
       },
     ).whenComplete(() {
       _categoryNameController.clear();
-      refreshCategoryList();
     });
   }
 }

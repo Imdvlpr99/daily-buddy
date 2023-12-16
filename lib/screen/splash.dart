@@ -11,7 +11,7 @@ class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
   @override
-  _SplashState createState() => _SplashState();
+  State<Splash> createState() => _SplashState();
 }
 
 class _SplashState extends State<Splash> {

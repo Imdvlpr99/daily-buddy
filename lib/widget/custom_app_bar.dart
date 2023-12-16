@@ -10,16 +10,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
     this.title = '',
-    this.leading,
-    this.titleWidget,
+    this.showBackButton = false,
     this.showActionIcon = false,
     this.onMenuActionTap,
+    this.onBackButtonTap,
   }) : super(key: key);
 
   final String title;
-  final Widget? leading;
-  final Widget? titleWidget;
+  final bool showBackButton;
   final bool showActionIcon;
+  final VoidCallback? onBackButtonTap;
   final VoidCallback? onMenuActionTap;
 
   @override
@@ -32,39 +32,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 25,
-              vertical: 50 / 2.5,
+              vertical: 25 / 2.5,
             ),
             child: Stack(
               children: [
-                Positioned.fill(
-                  child: titleWidget == null
-                      ? Center(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.white),
-                    ),
-                  )
-                      : Center(
-                    child: titleWidget,
+                Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white),
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    leading ??
-                        Transform.translate(
-                          offset: const Offset(-14, 0),
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              iconTheme: const IconThemeData(color: Colors.white), // Set your desired color
-                            ),
-                            child: const BackButton(),
-                          ),
-                        ),
+                    if (showBackButton)
+                      Transform.translate(
+                        offset: const Offset(-14, 0),
+                        child: InkWell(
+                          onTap: onBackButtonTap,
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Icon(Iconsax.arrow_left4, color: Colors.white,),
+                          )
+                        )
+                      ),
                     if (showActionIcon)
                       Transform.translate(
                         offset: const Offset(10, 0),
@@ -89,7 +84,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size(
     double.maxFinite,
-    80,
+    70,
   );
 }
 
