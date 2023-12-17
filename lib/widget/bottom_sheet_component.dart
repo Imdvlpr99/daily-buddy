@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:daily_buddy/model/activity_model.dart';
 import 'package:daily_buddy/widget/utils.dart';
 import 'package:flutter/material.dart';
