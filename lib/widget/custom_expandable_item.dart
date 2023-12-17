@@ -111,7 +111,7 @@ class _CustomExpandableItemState extends State<CustomExpandableItem> {
                         ),
                         const Spacer(),
                         Icon(
-                          isExpanded ? Iconsax.arrow_circle_up4 : Iconsax.arrow_circle_down5,
+                          isExpanded ? Iconsax.arrow_up_2 : Iconsax.arrow_down_14,
                           color: Colors.blue,
                         ),
                       ],

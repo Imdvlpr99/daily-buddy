@@ -285,7 +285,7 @@ class _HomeState extends State<Home> {
                                                   ],
                                                 ),
                                                 child: CustomExpandableItem(
-                                                  item: incompleteActivities[index],
+                                                  item: completedActivities[index],
                                                 ),
                                               );
                                             },
