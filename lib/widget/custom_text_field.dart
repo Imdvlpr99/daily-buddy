@@ -50,7 +50,7 @@ class CustomTextField<T> extends StatelessWidget {
 
     return Container(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width
+        maxWidth: MediaQuery.of(context).size.width,
       ),
       child: TextFormField(
         onTap: onMenuActionTap,
@@ -81,31 +81,30 @@ class CustomTextField<T> extends StatelessWidget {
             fontSize: 14,
           ),
           prefixIcon: prefixIcon,
-          suffixIcon: dropdownItems != null ? Padding(
+          suffixIcon: dropdownItems != null
+              ? Padding(
             padding: const EdgeInsets.only(right: 10.0),
-            child: Expanded(
-                child: DropdownButton<T>(
-                  value: selectedDropdownItem,
-                  icon: const Icon(Iconsax.arrow_down_1),
-                  iconSize: 24,
-                  elevation: 16,
-                  onChanged: onDropdownChanged,
-                  items: dropdownItems!.map<DropdownMenuItem<T>>((T value) {
-                    return DropdownMenuItem<T>(
-                      value: value,
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                        ),
-                        child: Text(displayText?.call(value) ?? ''),
-                      ),
-                    );
-                  }).toList(),
-                  underline: Container(),
-                  dropdownColor: Colors.white,
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
+            child: DropdownButton<T>(
+              value: selectedDropdownItem,
+              icon: const Icon(Iconsax.arrow_down_1),
+              iconSize: 24,
+              elevation: 16,
+              onChanged: onDropdownChanged,
+              items: dropdownItems!.map<DropdownMenuItem<T>>((T value) {
+                return DropdownMenuItem<T>(
+                  value: value,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    child: Text(displayText?.call(value) ?? ''),
+                  ),
+                );
+              }).toList(),
+              underline: Container(),
+              dropdownColor: Colors.white,
+              borderRadius: BorderRadius.circular(15.0),
             ),
           )
               : null,
