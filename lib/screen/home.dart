@@ -128,121 +128,115 @@ class _HomeState extends State<Home> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // In progress Activity
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 20),
-                                      if (incompleteActivities.isNotEmpty)
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              'In Progress Activities',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Container(
-                                              margin: const EdgeInsets.only(top: 10),
-                                              child: ListView.separated(
-                                                padding: EdgeInsets.zero,
-                                                itemCount: incompleteActivities.length,
-                                                separatorBuilder: (BuildContext context, int index) {
-                                                  return const SizedBox(height: 10);
-                                                },
-                                                shrinkWrap: true,
-                                                physics: const NeverScrollableScrollPhysics(),
-                                                itemBuilder: (context, index) {
-                                                  final item = incompleteActivities[index];
-                                                  return Slidable(
-                                                    endActionPane: ActionPane(
-                                                      motion: const ScrollMotion(),
-                                                      children: [
-                                                        SlidableAction(
-                                                          onPressed: (BuildContext context) {
-                                                            ApiService.deleteActivity(item.id, onSuccessDelete: () {
-                                                              getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
-                                                            });
-                                                          },
-                                                          backgroundColor: Colors.red,
-                                                          foregroundColor: Colors.white,
-                                                          icon: Iconsax.trash,
-                                                          label: 'Delete',
-                                                        ),
-                                                        SlidableAction(
-                                                          onPressed: (BuildContext context) {
-                                                            ActivityModel activityModel = ActivityModel(
-                                                              item.id,
-                                                              item.title,
-                                                              item.desc,
-                                                              item.date,
-                                                              item.time,
-                                                              item.categoryId,
-                                                              item.isComplete,
-                                                            );
+                                  if (incompleteActivities.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 20),
+                                        const Text(
+                                          'In Progress Activities',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Container(
+                                          margin: const EdgeInsets.only(top: 10),
+                                          child: ListView.separated(
+                                            padding: EdgeInsets.zero,
+                                            itemCount: incompleteActivities.length,
+                                            separatorBuilder: (BuildContext context, int index) {
+                                              return const SizedBox(height: 10);
+                                            },
+                                            shrinkWrap: true,
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            itemBuilder: (context, index) {
+                                              final item = incompleteActivities[index];
+                                              return Slidable(
+                                                endActionPane: ActionPane(
+                                                  motion: const ScrollMotion(),
+                                                  children: [
+                                                    SlidableAction(
+                                                      onPressed: (BuildContext context) {
+                                                        ApiService.deleteActivity(item.id, onSuccessDelete: () {
+                                                          getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
+                                                        });
+                                                      },
+                                                      backgroundColor: Colors.red,
+                                                      foregroundColor: Colors.white,
+                                                      icon: Iconsax.trash,
+                                                      label: 'Delete',
+                                                    ),
+                                                    SlidableAction(
+                                                      onPressed: (BuildContext context) {
+                                                        ActivityModel activityModel = ActivityModel(
+                                                          item.id,
+                                                          item.title,
+                                                          item.desc,
+                                                          item.date,
+                                                          item.time,
+                                                          item.categoryId,
+                                                          item.isComplete,
+                                                        );
 
-                                                            BottomSheetComponent.showActivityBottomSheet(
-                                                              context: context,
-                                                              activityModel: activityModel,
-                                                              onComplete: () {
-                                                                setState(() {
-                                                                  getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
-                                                                });
-                                                              },
-                                                            );
-                                                          },
-                                                          backgroundColor: Colors.blue,
-                                                          foregroundColor: Colors.white,
-                                                          icon: Iconsax.edit,
-                                                          label: 'Edit',
-                                                          borderRadius: const BorderRadius.only(
-                                                            topRight: Radius.circular(15.0),
-                                                            bottomRight: Radius.circular(15.0),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    startActionPane: ActionPane(
-                                                      motion: const ScrollMotion(),
-                                                      children: [
-                                                        SlidableAction(
-                                                          onPressed: (BuildContext context) {
-                                                            ActivityModel activityModel = ActivityModel(item.id, '', '', '', '', '', 'true');
-                                                            ApiService.updateActivity(activityModel, onSuccessUpdateActivity: () {
+                                                        BottomSheetComponent.showActivityBottomSheet(
+                                                          context: context,
+                                                          activityModel: activityModel,
+                                                          onComplete: () {
+                                                            setState(() {
                                                               getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
                                                             });
                                                           },
-                                                          backgroundColor: Colors.green,
-                                                          foregroundColor: Colors.white,
-                                                          icon: Iconsax.tick_circle,
-                                                          label: 'Complete',
-                                                          borderRadius: const BorderRadius.only(
-                                                            topLeft: Radius.circular(15.0),
-                                                            bottomLeft: Radius.circular(15.0),
-                                                          ),
-                                                        ),
-                                                      ],
+                                                        );
+                                                      },
+                                                      backgroundColor: Colors.blue,
+                                                      foregroundColor: Colors.white,
+                                                      icon: Iconsax.edit,
+                                                      label: 'Edit',
+                                                      borderRadius: const BorderRadius.only(
+                                                        topRight: Radius.circular(15.0),
+                                                        bottomRight: Radius.circular(15.0),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                startActionPane: ActionPane(
+                                                  motion: const ScrollMotion(),
+                                                  children: [
+                                                    SlidableAction(
+                                                      onPressed: (BuildContext context) {
+                                                        ActivityModel activityModel = ActivityModel(item.id, '', '', '', '', '', 'true');
+                                                        ApiService.updateActivity(activityModel, onSuccessUpdateActivity: () {
+                                                          getActivityList(Utils.formatDateTime(_selectedDate, 'yyyy-MM-dd'));
+                                                        });
+                                                      },
+                                                      backgroundColor: Colors.green,
+                                                      foregroundColor: Colors.white,
+                                                      icon: Iconsax.tick_circle,
+                                                      label: 'Complete',
+                                                      borderRadius: const BorderRadius.only(
+                                                        topLeft: Radius.circular(15.0),
+                                                        bottomLeft: Radius.circular(15.0),
+                                                      ),
                                                     ),
-                                                    child: CustomExpandableItem(
-                                                      item: incompleteActivities[index],
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            )
-                                          ],
+                                                  ],
+                                                ),
+                                                child: CustomExpandableItem(
+                                                  item: incompleteActivities[index],
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
+                                      ],
+                                    ),
                                   // Completed Activities
                                   if (completedActivities.isNotEmpty)
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+                                        const SizedBox(height: 20),
                                         const Text(
                                           'Completed Activities',
                                           style: TextStyle(
