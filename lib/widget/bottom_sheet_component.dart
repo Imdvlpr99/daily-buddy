@@ -111,7 +111,7 @@ class _ActivityBottomSheetContentState extends State<_ActivityBottomSheetContent
     return SingleChildScrollView(
       controller: widget.scrollController,
       child: SizedBox(
-        height: max(MediaQuery.of(context).size.height * 0.8, maxHeight),
+        height: maxHeight = MediaQuery.of(context).size.height * 0.8,
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20.0),
@@ -132,7 +132,8 @@ class _ActivityBottomSheetContentState extends State<_ActivityBottomSheetContent
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
                       child: ListView(
                         physics: const NeverScrollableScrollPhysics(),
                         children: <Widget>[
@@ -329,7 +330,7 @@ class _ActivityBottomSheetContentState extends State<_ActivityBottomSheetContent
           Navigator.pop(context);
         });
   }
-  
+
   void editData() {
     final title = _titleController.text;
     final desc = _descController.text;
